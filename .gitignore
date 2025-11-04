@@ -6,3 +6,6 @@ sa_key.json
 .vscode/
 .venv
 venv/
+sa_key.json
+credentials/*.json
+.envsa_key.json
