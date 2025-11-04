@@ -1,0 +1,21 @@
+
+├── ai-doc-processor/
+│   ├── src/
+│   │   ├── api/
+│   │   │   └── routes.py
+│   │   ├── domain/
+│   │   │   └── schemas.py
+│   │   ├── services/
+│   │   │   └── processing.py
+│   │   ├── clients/
+│   │   │   ├── gdocs_client.py
+│   │   │   └── vertex_client.py
+│   │   ├── utils/
+│   │   │   └── logger.py
+│   │   ├── settings.py
+│   │   └── main.py
+│   ├── .gitignore
+│   ├── .env
+│   ├── requirements.txt
+│   └── README.md
+

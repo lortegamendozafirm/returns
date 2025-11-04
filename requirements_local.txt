@@ -1,0 +1,17 @@
+# --- Core del proyecto ---
+fastapi
+uvicorn[standard]
+pydantic
+python-dotenv
+
+# --- Google Cloud SDKs ---
+google-cloud-aiplatform
+google-api-python-client
+google-auth
+google-auth-httplib2
+google-auth-oauthlib
+google-cloud-storage
+
+# --- Librerías de apoyo ---
+gspread
+requests

@@ -1,0 +1,19 @@
+fastapi>=0.115,<1
+uvicorn[standard]>=0.30
+
+pydantic>=2.7
+pydantic-settings>=2.2
+python-dotenv>=1.0
+
+# Google APIs (Docs/Drive)
+google-api-python-client>=2.147
+google-auth>=2.41
+google-auth-httplib2>=0.2
+google-auth-oauthlib>=1.2
+google-cloud-tasks>=2.16.5
+httplib2>=0.22
+
+# Vertex AI (incluye módulo `vertexai`)
+google-cloud-aiplatform>=1.70
+
+PyPDF2
