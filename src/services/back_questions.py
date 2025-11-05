@@ -2,7 +2,8 @@
 from __future__ import annotations
 from io import BytesIO
 from typing import List, Dict, Any
-import json, re
+import json
+import re
 
 from PyPDF2 import PdfReader, PdfWriter
 
@@ -164,7 +165,7 @@ def process_back_questions_job(
     take_first = max(1, sampling_first_pages or settings.backq_first_pages_default)
     take_last = max(1, sampling_last_pages or settings.backq_last_pages_default)
     sample_bytes = _extract_sample_pdf_bytes(bytes_local, take_first=take_first, take_last=take_last)
-    sample_uri = upload_bytes(settings.pdf_staging_bucket, sample_bytes, suffix=".pdf")
+    sample_uri = upload_bytes(settings.pdf_staging_bucket or "", sample_bytes, suffix=".pdf")
     questions = _detect_back_questions_via_model([sample_uri])
 
     if not questions:
