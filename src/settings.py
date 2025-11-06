@@ -2,7 +2,7 @@
 from __future__ import annotations
 import os
 from functools import lru_cache
-from typing import Optional
+from typing import Optional, Dict
 from pydantic import Field
 from pydantic_settings  import BaseSettings, SettingsConfigDict
 
@@ -40,14 +40,21 @@ class Settings(BaseSettings):
     vertex_model_id_pro: str = Field("gemini-2.5-pro", env="VERTEX_MODEL_ID_PRO") # type: ignore
 
     # Cloud Tasks
-    tasks_queue_id: str = Field("back-questions", env="TASKS_QUEUE_ID") #
+    tasks_queue_id: str = Field("back-questions", env="TASKS_QUEUE_ID") # type: ignore
     tasks_handler_base_url: str = ""      # p.ej. https://<service>-<hash>-uc.a.run.app
     tasks_oidc_audience: str = ""         # si tu servicio requiere auth
 
     # Back-questions defaults
-    backq_first_pages_default: int = 40
-    backq_last_pages_default: int = 40
+    backq_first_pages_default: int = Field(40, env="BACKQ_FIRST_PAGES_DEFAULT") # type: ignore
+    backq_last_pages_default: int = Field(40, env="BACKQ_LAST_PAGES_DEFAULT") # type: ignore
 
+    base_prompt_ids_json: Optional[str] = Field(None, env="BASE_PROMPT_IDS_JSON")  # type: ignore
+
+    # Límite global de detección
+    backq_detect_limit: int = Field(100, env="BACKQ_DETECT_LIMIT")  # type: ignore
+
+    backq_k_top_chunks_default: int = Field(4, env="BACKQ_K_TOP_CHUNKS_DEFAULT") # type: ignore
+    vertex_call_spacing_s: float = Field(1.0, env="VERTEX_CALL_SPACING_S") # type: ignore
 
     class Config:
         env_file = ".env"
@@ -56,6 +63,22 @@ class Settings(BaseSettings):
     #model_config = SettingsConfigDict(env_file=".env", extra="ignore")
     
     # --- Helpers de conveniencia ---
+
+
+    # Helpers:
+    def base_prompt_ids(self) -> Dict[str, str]:
+        """
+        Retorna el mapping {tipo_visa_lower: doc_id} desde env JSON si existe,
+        si no, dict vacío (se podrá pasar por request).
+        """
+        import json
+        if not self.base_prompt_ids_json:
+            return {}
+        try:
+            return {k.lower(): v for k, v in json.loads(self.base_prompt_ids_json).items()}
+        except Exception:
+            return {}
+    
     @property
     def use_adc(self) -> bool:
         """Detecta si se debe usar ADC (auth de Cloud Run o gcloud local)"""
