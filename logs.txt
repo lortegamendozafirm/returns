@@ -1,0 +1,147 @@
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+2025-11-07 14:59:09 [INFO] [src.services.back_questions] 🏁 Back-Questions: inicio de job.
+2025-11-07 14:59:09 [INFO] [src.auth] 📄 Cliente Docs inicializado (cacheado).
+2025-11-07 14:59:13 [INFO] [src.auth] 📁 Cliente Drive inicializado (cacheado).
+2025-11-07 14:59:17 [INFO] [src.services.back_questions] 📄 PDF n=377 páginas; sample first/last = 40/40
+2025-11-07 14:59:28 [INFO] [src.services.back_questions] 🗂️ Sample subido a: gs://my-bucket-out/uploads/2025/11/07/25e2bc5c-d96f-484f-80cc-fccb58a0c199.pdf
+2025-11-07 14:59:28 [INFO] [src.auth] 🤖 Inicializando Vertex AI (proyecto=ortega-473114, región=us-central1)...
+2025-11-07 14:59:28 [INFO] [src.auth] ✅ Vertex AI inicializado correctamente con credenciales explícitas.
+2025-11-07 14:59:28 [INFO] [src.clients.vertex_client] 🤖 (JSON) Modelo gemini-2.5-flash con 1 archivo(s) adjunto(s)...
+C:\Users\HoneyMaldonado\Documents\regresos\venv\Lib\site-packages\vertexai\generative_models\_generative_models.py:433: UserWarning: This feature is deprecated as of June 24, 2025 and will be removed on June 24, 2026. For details, see https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk.
+  warning_logs.show_deprecation_warning()
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q1] cubierta en chunks: [0, 1, 1]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q2] cubierta en chunks: [5, 5, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q3] cubierta en chunks: [2, 4, 4]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q4] cubierta en chunks: [3, 3, 4]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q5] cubierta en chunks: [3, 4, 4]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q6] cubierta en chunks: [2, 5, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q7] cubierta en chunks: [1, 5, 5]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q9] cubierta en chunks: [1, 5, 5]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q10] cubierta en chunks: [4, 4, 5]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q11] cubierta en chunks: [1, 5, 5]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q12] cubierta en chunks: [2, 3, 3]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q13] cubierta en chunks: [0, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q15] cubierta en chunks: [5, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q16] cubierta en chunks: [3, 4, 4]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q17] cubierta en chunks: [5, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q18] cubierta en chunks: [4, 4, 5]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q19] cubierta en chunks: [0, 4, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q20] cubierta en chunks: [2, 5, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q21] cubierta en chunks: [5, 5, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q22] cubierta en chunks: [0, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q23] cubierta en chunks: [2, 5, 5]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q24] cubierta en chunks: [3, 3, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q25] cubierta en chunks: [0, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q26] cubierta en chunks: [5, 5, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q27] cubierta en chunks: [0, 4, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q28] cubierta en chunks: [0, 4, 4]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q29] cubierta en chunks: [1, 2, 2]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q30] cubierta en chunks: [0, 4, 4]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q31] cubierta en chunks: [5, 5, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q32] cubierta en chunks: [0, 4, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q33] cubierta en chunks: [1, 1, 4]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q34] cubierta en chunks: [3, 3, 4]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q35] cubierta en chunks: [0, 1, 2]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q36] cubierta en chunks: [5, 5, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q37] cubierta en chunks: [1, 2, 2]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q38] cubierta en chunks: [1, 2, 2]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q39] cubierta en chunks: [0, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q40] cubierta en chunks: [5, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q41] cubierta en chunks: [5, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q42] cubierta en chunks: [5, 5, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q43] cubierta en chunks: [0, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q44] cubierta en chunks: [3, 4, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q45] cubierta en chunks: [5, 5, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q46] cubierta en chunks: [0, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q47] cubierta en chunks: [0, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q48] cubierta en chunks: [0, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q49] cubierta en chunks: [5, 5, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q50] cubierta en chunks: [3, 3, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q51] cubierta en chunks: [3, 3, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q52] cubierta en chunks: [0, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q53] cubierta en chunks: [5, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q54] cubierta en chunks: [1, 1, 5]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q55] cubierta en chunks: [3, 3, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q56] cubierta en chunks: [2, 3, 3]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q57] cubierta en chunks: [3, 3, 4]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q58] cubierta en chunks: [2, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q59] cubierta en chunks: [0, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q61] cubierta en chunks: [4, 4, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q62] cubierta en chunks: [0, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q63] cubierta en chunks: [0, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q64] cubierta en chunks: [0, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q65] cubierta en chunks: [3, 3, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q67] cubierta en chunks: [3, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q68] cubierta en chunks: [2, 2, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q69] cubierta en chunks: [2, 2, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q70] cubierta en chunks: [5, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q71] cubierta en chunks: [2, 2, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q72] cubierta en chunks: [3, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q73] cubierta en chunks: [1, 1, 2]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q74] cubierta en chunks: [3, 5, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q75] cubierta en chunks: [2, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q76] cubierta en chunks: [5, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q77] cubierta en chunks: [3, 3, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q79] cubierta en chunks: [5, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q80] cubierta en chunks: [5, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q81] cubierta en chunks: [5, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q82] cubierta en chunks: [3, 3, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q83] cubierta en chunks: [3, 3, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q84] cubierta en chunks: [3, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q85] cubierta en chunks: [3, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q86] cubierta en chunks: [3, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q87] cubierta en chunks: [3, 6, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q88] cubierta en chunks: [3, 3, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q89] cubierta en chunks: [2, 2, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q90] cubierta en chunks: [2, 3, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q91] cubierta en chunks: [2, 2, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q92] cubierta en chunks: [2, 2, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q93] cubierta en chunks: [2, 3, 6]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🧭 Q[q94] cubierta en chunks: [1, 1, 2]
+2025-11-07 15:03:40 [INFO] [src.services.back_questions] 🗺️ MAP chunk 0: 20 preguntas
+2025-11-07 15:03:40 [INFO] [src.clients.vertex_client] 🤖 (JSON) Modelo gemini-2.5-flash con 1 archivo(s) adjunto(s)...
+C:\Users\HoneyMaldonado\Documents\regresos\venv\Lib\site-packages\vertexai\generative_models\_generative_models.py:433: UserWarning: This feature is deprecated as of June 24, 2025 and will be removed on June 24, 2026. For details, see https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk.
+  warning_logs.show_deprecation_warning()
+2025-11-07 15:04:30 [INFO] [src.services.back_questions] 🗺️ MAP chunk 3: 40 preguntas
+2025-11-07 15:04:30 [INFO] [src.clients.vertex_client] 🤖 (JSON) Modelo gemini-2.5-flash con 1 archivo(s) adjunto(s)...
+2025-11-07 15:04:55 [INFO] [src.services.back_questions] 🗺️ MAP chunk 2: 31 preguntas
+2025-11-07 15:04:55 [INFO] [src.clients.vertex_client] 🤖 (JSON) Modelo gemini-2.5-flash con 1 archivo(s) adjunto(s)...
+2025-11-07 15:05:23 [INFO] [src.services.back_questions] 🗺️ MAP chunk 5: 40 preguntas
+2025-11-07 15:05:23 [INFO] [src.clients.vertex_client] 🤖 (JSON) Modelo gemini-2.5-flash con 1 archivo(s) adjunto(s)...
+2025-11-07 15:05:39 [INFO] [src.services.back_questions] 🗺️ MAP chunk 1: 17 preguntas
+2025-11-07 15:05:39 [INFO] [src.clients.vertex_client] 🤖 (JSON) Modelo gemini-2.5-flash con 1 archivo(s) adjunto(s)...
+2025-11-07 15:06:24 [INFO] [src.services.back_questions] 🗺️ MAP chunk 4: 24 preguntas
+2025-11-07 15:06:24 [INFO] [src.clients.vertex_client] 🤖 (JSON) Modelo gemini-2.5-flash con 1 archivo(s) adjunto(s)...
+2025-11-07 15:06:52 [INFO] [src.services.back_questions] 🗺️ MAP chunk 6: 95 preguntas
+2025-11-07 15:06:52 [INFO] [src.clients.vertex_client] 🤖 (JSON) Modelo gemini-2.5-flash con 1 archivo(s) adjunto(s)...
+2025-11-07 15:07:24 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:07:49 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:08:05 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:08:21 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:08:29 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:09:05 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:09:35 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:10:08 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:10:23 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:10:47 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:11:05 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:11:13 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:11:27 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:11:44 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:12:08 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:12:35 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:12:38 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:13:07 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:13:43 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:13:56 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:14:13 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:14:34 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:14:55 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:15:08 [WARNING] [src.clients.vertex_client] 🔁 generate_text(gemini-2.5-pro): ResourceExhausted (1/6). Durmiendo 3.0s…
+2025-11-07 15:15:23 [WARNING] [src.clients.vertex_client] 🔁 generate_text(gemini-2.5-pro): ResourceExhausted (2/6). Durmiendo 6.0s…
+2025-11-07 15:15:43 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:16:03 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:16:27 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:16:51 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...
+2025-11-07 15:17:17 [INFO] [src.clients.vertex_client] 🤖 Solicitando respuesta a modelo gemini-2.5-pro...

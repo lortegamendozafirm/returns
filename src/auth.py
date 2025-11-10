@@ -105,20 +105,18 @@ def init_vertex_ai() -> bool:
     logger.info(f"🤖 Inicializando Vertex AI (proyecto={project}, región={location})...")
 
     try:
-        # **Línea Clave:** Obtener las credenciales que ya funcionan para Drive/Docs/Sheets
+        # Obtener las credenciales que ya funcionan para Drive/Docs/Sheets
         creds = get_workspace_credentials()
-        # Refrescar el token (necesario si es un Service Account en local)
-        creds.refresh(Request()) 
-        
-        # **Línea Clave:** Pasar las credenciales explícitamente a Vertex AI
-        vertexai.init(project=project, location=location, credentials=creds)
-        logger.info("✅ Vertex AI inicializado correctamente con credenciales explícitas.")
-        # al final de init_vertex_ai
-        from google.api_core.client_options import ClientOptions
-        client_opts = ClientOptions(api_endpoint=f"{location}-aiplatform.googleapis.com")
-        vertexai.init(project=project, location=location, credentials=creds) 
-        return True
+        # Intentar refrescar el token (útil con SA JSON en local)
+        try:
+            creds.refresh(Request())
+        except Exception as e:
+            logger.debug(f"No se pudo refrescar credenciales explícitamente: {e}")
 
+        # Inicialización única de Vertex AI con credenciales explícitas
+        vertexai.init(project=project, location=location, credentials=creds)
+        logger.info("✅ Vertex AI inicializado correctamente.")
+        return True
     except Exception as e:
         logger.error(f"Error al inicializar Vertex AI: {e}")
         # Es bueno relanzar el error para que el programa se detenga si la inicialización falla

@@ -71,9 +71,12 @@ def _execute_with_retries(request: HttpRequest, *, max_retries: int = 6) -> Opti
             delay = min(delay * 2, 20)
             # Re-crear cliente en intentos altos por sesión “sucia”
             if attempt >= 3:
-                from src.auth import build_docs_client as _b
-                _b.cache_clear()
-                _b()
+                try:
+                    from src.auth import build_docs_client as _b
+                    _b.cache_clear()  # type: ignore[attr-defined]
+                    _b()
+                except Exception:
+                    pass
             continue
         except HttpError as e:
             status = getattr(e, "status_code", None) or getattr(e.resp, "status", None)
@@ -127,7 +130,89 @@ def _get_end_index(doc: Document) -> int:
     last = content[-1]
     return int(last.get("endIndex", 1))
 
-# ========= Operaciones de escritura (texto simple) =========
+# ========= Parser markdown-ish → bloques semánticos =========
+
+Bullet = Tuple[str, List[str]]   # ("ul"|"ol", items)
+Para   = Tuple[str, str]         # ("p", text)
+Head   = Tuple[str, int, str]    # ("h", level, text)
+Block  = Tuple[Any, ...]         # ("p", ..) | ("ul", ..) | ("ol", ..) | ("h", ..)
+
+_ul_pat = re.compile(r"^\s*([\-*•])\s+(.*\S)\s*$")
+_ol_pat = re.compile(r"^\s*(\d+)[\.\)]\s+(.*\S)\s*$")
+_h_pat  = re.compile(r"^\s*(#{2,6})\s+(.*\S)\s*$")  # ## … ######
+
+def _parse_answer_to_blocks(text: str) -> List[Block]:
+    """
+    Convierte markdown ligero a bloques semánticos:
+      - ("h", level, text)  para ##, ###, ####… (level en 2..6)
+      - ("ul", [...])       para -/*/• item
+      - ("ol", [...])       para 1. / 1) item
+      - ("p", "texto")      para párrafos
+    Agrupa listas contiguas y respeta líneas en blanco como separadores de bloques.
+    """
+    lines = [ln.rstrip() for ln in (text or "").splitlines()]
+    out: List[Block] = []
+    i = 0
+    while i < len(lines):
+        ln = lines[i]
+
+        # saltos
+        if not ln.strip():
+            i += 1
+            continue
+
+        # Encabezado interno (## ### …)
+        m_h = _h_pat.match(ln)
+        if m_h:
+            level = len(m_h.group(1))  # 2..6
+            txt = m_h.group(2).strip()
+            out.append(("h", level, txt))
+            i += 1
+            continue
+
+        # UL
+        m_ul = _ul_pat.match(ln)
+        if m_ul:
+            items: List[str] = []
+            while i < len(lines):
+                m = _ul_pat.match(lines[i] or "")
+                if not m:
+                    break
+                items.append(m.group(2).strip())
+                i += 1
+            out.append(("ul", items))
+            continue
+
+        # OL
+        m_ol = _ol_pat.match(ln)
+        if m_ol:
+            items: List[str] = []
+            while i < len(lines):
+                m = _ol_pat.match(lines[i] or "")
+                if not m:
+                    break
+                items.append(m.group(2).strip())
+                i += 1
+            out.append(("ol", items))
+            continue
+
+        # Párrafo (consume hasta blanco o nuevo bloque)
+        buf = [ln]
+        i += 1
+        while (
+            i < len(lines)
+            and lines[i].strip()
+            and not _ul_pat.match(lines[i])
+            and not _ol_pat.match(lines[i])
+            and not _h_pat.match(lines[i])
+        ):
+            buf.append(lines[i])
+            i += 1
+        out.append(("p", "\n".join(buf).strip()))
+
+    return out
+
+# ========= Operación de escritura simple =========
 
 def write_to_document(document_id: str, text: str) -> None:
     """
@@ -169,86 +254,6 @@ def write_to_document(document_id: str, text: str) -> None:
             start += MAX_CHARS
             part += 1
             time.sleep(0.15)  # 150ms para no “aplanar” el backend
-
-# ========= Parser markdown-ish → bloques semánticos =========
-
-Bullet = Tuple[str, List[str]]   # ("ul"|"ol", items)
-Para   = Tuple[str, str]         # ("p", text)
-Head   = Tuple[str, int, str]    # ("h", level, text)
-Block  = Tuple[str, object]      # union
-
-_ul_pat = re.compile(r"^\s*([\-*•])\s+(.*\S)\s*$")
-_ol_pat = re.compile(r"^\s*(\d+)[\.\)]\s+(.*\S)\s*$")
-_h_pat  = re.compile(r"^\s*(#{2,6})\s+(.*\S)\s*$")  # ## … ######
-
-def _parse_answer_to_blocks(text: str) -> List[Block]:
-    """
-    Convierte markdown ligero a bloques:
-      - ("h", level, text)  para ##, ###, ####…
-      - ("ul", [...])       para -/*/• item
-      - ("ol", [...])       para 1. / 1) item
-      - ("p", "texto")      para párrafos
-    Agrupa listas contiguas y respeta líneas en blanco como separadores.
-    """
-    lines = [ln.rstrip() for ln in (text or "").splitlines()]
-    out: List[Block] = []
-    i = 0
-    while i < len(lines):
-        ln = lines[i]
-
-        # blanco
-        if not ln.strip():
-            i += 1
-            continue
-
-        # encabezado interno
-        m_h = _h_pat.match(ln)
-        if m_h:
-            level = len(m_h.group(1))  # 2..6
-            txt = m_h.group(2).strip()
-            out.append(("h", level, txt))
-            i += 1
-            continue
-
-        # ul
-        m_ul = _ul_pat.match(ln)
-        if m_ul:
-            items = []
-            while i < len(lines):
-                m = _ul_pat.match(lines[i] or "")
-                if not m:
-                    break
-                items.append(m.group(2).strip())
-                i += 1
-            out.append(("ul", items))
-            continue
-
-        # ol
-        m_ol = _ol_pat.match(ln)
-        if m_ol:
-            items = []
-            while i < len(lines):
-                m = _ol_pat.match(lines[i] or "")
-                if not m:
-                    break
-                items.append(m.group(2).strip())
-                i += 1
-            out.append(("ol", items))
-            continue
-
-        # párrafo
-        buf = [ln]
-        i += 1
-        while (i < len(lines)
-               and lines[i].strip()
-               and not _ul_pat.match(lines[i])
-               and not _ol_pat.match(lines[i])
-               and not _h_pat.match(lines[i])):
-            buf.append(lines[i])
-            i += 1
-        out.append(("p", "\n".join(buf).strip()))
-
-    return out
 
 # ========= Escritura con estilos nativos (Q/A) =========
 
@@ -340,16 +345,20 @@ def write_qas_native(document_id: str, title: str, qas: List[Dict[str, str]]) ->
 
         # Bloques de respuesta
         blocks = _parse_answer_to_blocks(a_text)
-        for kind, payload in blocks:
+        for block in blocks:
+            kind = block[0]
             if kind == "p":
-                _insert_paragraph(cast(str, payload), style=None)
+                _insert_paragraph(block[1], style=None)
             elif kind == "ul":
-                _insert_list(cast(List[str], payload), preset="BULLET_DISC_CIRCLE_SQUARE")
+                _insert_list(block[1], preset="BULLET_DISC_CIRCLE_SQUARE")
             elif kind == "ol":
-                _insert_list(cast(List[str], payload), preset="NUMBERED_DECIMAL_ALPHA_ROMAN")
+                _insert_list(block[1], preset="NUMBERED_DECIMAL_ALPHA_ROMAN")
             elif kind == "h":
-                level, txt = cast(Tuple[int, str], payload)
-                _insert_heading(level, txt)
+                _, level, txt = block  # ("h", int, str)
+                _insert_heading(int(level), txt)
+            else:
+                # fallback defensivo
+                _insert_paragraph(" ".join(str(x) for x in block[1:]), style=None)
 
         # Flush defensivo si hay demasiadas operaciones acumuladas
         if len(requests) >= 450:
