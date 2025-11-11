@@ -28,11 +28,38 @@ _VARIANTS = [
     r"preguntas?\s+regreso",
     r"preguntas?\s+de\s+seguimiento",
     r"preguntas?\s+para\s+el\s+cliente",
+    r"\bPREGUNTAS\s+REGRESO\b",
     r"seguimiento",
     r"back\s*questions?",
     r"follow[-\s]up",
     r"preguntas?\s+pendientes?",
 ]
+
+# ---------- Helpers de logging (NUEVO) ----------
+def _log_detected_questions(tag: str, questions: List[Dict[str, Any]], *, max_len: int = 160) -> None:
+    """
+    Loggea preguntas detectadas de forma compacta:
+      • idx, id, preview(text), page_hint, section_heading
+    """
+    if not questions:
+        logger.info(f"{tag}: 0 preguntas.")
+        return
+    logger.info(f"{tag}: {len(questions)} preguntas detectadas.")
+    for i, q in enumerate(questions, 1):
+        qid = q.get("id") or f"q{i}"
+        txt = (q.get("text") or "").strip().replace("\n", " ")
+        if len(txt) > max_len:
+            txt = txt[:max_len] + "…"
+        ph  = q.get("page_hint")
+        sh  = q.get("section_heading")
+        logger.info(f"{tag}  [{i:02d}] id={qid} page_hint={ph} heading={sh!r} :: {txt}")
+
+def _first_heading_variant_hit(text: str) -> str | None:
+    for pat in _VARIANTS:
+        if re.search(pat, text, re.I):
+            return pat
+    return None
+
 
 # ================= Utilidades JSON robustas =================
 
@@ -94,7 +121,7 @@ def _detect_back_questions_via_model_text(sample_text: str, *, max_questions: in
     * Detector ML usando SOLO TEXTO (sin adjuntos). Se pasa el sample P40+U40 como texto plano.
     """
     prompt = f"""
-Eres un extractor de 'Preguntas de regreso' en documentos legales.
+Eres un extractor de 'Preguntas regreso' en documentos legales.
 Busca secciones y encabezados que indiquen preguntas para el cliente, seguimiento o back questions.
 Entrega SOLO JSON válido (sin comentarios, sin texto adicional):
 
@@ -106,7 +133,7 @@ Entrega SOLO JSON válido (sin comentarios, sin texto adicional):
 
 Reglas:
 - Incluye solo preguntas (frases con '?' o bullets interrogativos) o elementos bajo encabezados relevantes.
-- Acepta variantes: "Preguntas de regreso", "Preguntas regreso", "Preguntas de seguimiento", "Preguntas para el cliente", "Seguimiento", "Back questions", "Follow-up".
+- Acepta variantes: "Preguntas de regreso", "Preguntas regreso", "PREGUNTAS REGRESO", "Preguntas de seguimiento", "Preguntas para el cliente", "Seguimiento", "Back questions", "Follow-up".
 - 'page_hint' si el texto sugiere la página; si no, null.
 - Máximo {max_questions} preguntas.
 
@@ -146,31 +173,25 @@ def _extract_full_text(data: bytes) -> str:
     Extrae TEXTO de TODO el PDF (concatenado por páginas).
     Prioriza PyMuPDF con 'blocks' (mejor orden visual); fallback a PyPDF2.
     """
-    # --- Opción 1: PyMuPDF (mejor orden por bloques) ---
     try:
-        import fitz  # PyMuPDF
+        import fitz
         doc = fitz.open(stream=data, filetype="pdf")
         parts = []
         for page in doc:
-            # Intento preferente: bloques (bbox + orden visual)
             blocks = page.get_text("blocks") or []
             blk_texts = []
             for b in blocks:
-                # b = (x0, y0, x1, y1, "texto", block_no, block_type, ...)
                 if isinstance(b, (list, tuple)) and len(b) >= 5 and isinstance(b[4], str):
                     blk_texts.append(b[4])
             if blk_texts:
                 parts.append("\n".join(blk_texts).replace("\r", ""))
             else:
-                # Fallback por página si no hay bloques
-                parts.append((page.get_text("text") or "").replace("\r", ""))
+                parts.append((str(page.get_text("text")) or "").replace("\r", ""))
         doc.close()
         return "\n".join(parts)
     except Exception:
-        # Continúa al fallback
         pass
 
-    # --- Opción 2: PyPDF2 (fallback compatible) ---
     r = PdfReader(BytesIO(data))
     buf = []
     for i in range(len(r.pages)):
@@ -180,6 +201,7 @@ def _extract_full_text(data: bytes) -> str:
         except Exception:
             buf.append("")
     return "\n".join(buf)
+
 
 
 def _detect_back_questions_regex(sample_bytes: bytes) -> List[Dict[str, Any]]:
@@ -200,6 +222,7 @@ def _detect_back_questions_regex(sample_bytes: bytes) -> List[Dict[str, Any]]:
         for line in txt.splitlines():
             s = line.strip()
             if s and re.search(r"¿.+\?", s):
+                logger.info(f"la pregunta agregada es {s}")
                 qs.append(s)
         return [{"id": f"q{i+1}", "text": q, "page_hint": None, "section_heading": None} for i, q in enumerate(qs)]
     return []
@@ -246,57 +269,41 @@ def _resolve_base_prompt_doc_id(
 
 def _extract_sample_pdf_bytes(data: bytes, take_first: int, take_last: int) -> bytes:
     """
-    Devuelve un PDF en bytes que contiene SOLO:
-      - las primeras `take_first` páginas y
-      - las últimas `take_last` páginas,
-    evitando solapamientos si (take_first + take_last) > total.
-
-    Prioriza PyMuPDF por rendimiento; cae a PyPDF2 si no está disponible.
+    Devuelve un PDF en bytes con primeras `take_first` y últimas `take_last` páginas (sin solapar).
+    PyMuPDF primero (rápido), PyPDF2 como fallback.
     """
-    # --- Opción 1: PyMuPDF (rápido, conserva estructura) ---
     try:
-        import fitz  # PyMuPDF
+        import fitz
         src = fitz.open(stream=data, filetype="pdf")
         total = src.page_count
-
         first = max(0, min(int(take_first or 0), total))
-        last  = max(0, min(int(take_last or 0),  total))
-
-        first_end   = min(first, total)         # [0, first_end)
-        last_start  = max(0, total - last)      # [last_start, total)
-
-        # Evita duplicar páginas si N+M > total
+        last  = max(0, min(int(take_last  or 0), total))
+        first_end  = min(first, total)
+        last_start = max(0, total - last)
         if last_start < first_end:
             last_start = first_end
-
         out = fitz.open()
         if first_end > 0:
             out.insert_pdf(src, from_page=0, to_page=first_end - 1)
         if last_start < total:
             out.insert_pdf(src, from_page=last_start, to_page=total - 1)
-
         result = out.tobytes()
         out.close()
         src.close()
         return result
     except Exception:
-        # Continúa al fallback
         pass
 
-    # --- Opción 2: PyPDF2 (fallback compatible) ---
     r = PdfReader(BytesIO(data))
     n = len(r.pages)
     w = PdfWriter()
-
     first_count = min(max(0, int(take_first or 0)), n)
     for i in range(first_count):
         w.add_page(r.pages[i])
-
     last_count = min(max(0, int(take_last or 0)), max(0, n - first_count))
     for i in range(n - last_count, n):
-        if i >= first_count:  # evita solaparse
+        if i >= first_count:
             w.add_page(r.pages[i])
-
     out = BytesIO()
     w.write(out)
     return out.getvalue()
@@ -619,13 +626,17 @@ def process_back_questions_job(
     logger.info(f"📄 PDF n={n_pages} páginas; sample first/last = {take_first}/{take_last}")
     sample_bytes = _extract_sample_pdf_bytes(bytes_local, take_first=take_first, take_last=take_last)
     sample_text = _extract_full_text(sample_bytes)
+    hit = _first_heading_variant_hit(sample_text)
+    logger.info(f"HEADINGS: primer patrón que hizo match = {hit!r}")
     _sheet_update(status="40% Muestra procesada")
 
     max_q = int((additional_params or {}).get("detect_limit") or settings.backq_detect_limit)
     questions = _detect_back_questions_via_model_text(sample_text, max_questions=max_q)
+    _log_detected_questions("DET-ML", questions)
     if not questions:
         logger.warning("⚠️ Detector ML no devolvió preguntas. Probando fallback regex local sobre el sample…")
         questions = _detect_back_questions_regex(sample_bytes)[:max_q]
+        _log_detected_questions("DET-REGEX", questions)
 
     if not questions:
         # Sin preguntas → escribir doc básico y salir
@@ -634,13 +645,14 @@ def process_back_questions_job(
         _sheet_update(status="100% ✔️ (sin preguntas detectadas)", link=output_link)
         return {
             "status": "success",
-            "message": "No se detectaron preguntas de regreso en el documento.",
+            "message": "No se detectaron preguntas regreso en el documento.",
             "output_doc_link": output_link,
         }
 
     # Preparar PDF completo → SOLO TEXTO + textos por chunk (sin GCS)
     pages_per_chunk = max(5, settings.pdf_max_pages_per_chunk)
     chunk_texts = _split_pdf_to_text_chunks(bytes_local, pages_per_chunk)
+    logger.info(f"Chunking: {len(chunk_texts)} chunks a ~{pages_per_chunk} páginas/chunk.")
     _sheet_update(status=f"50% {len(questions)} preguntas detectadas")
 
     strategy = (additional_params or {}).get("strategy") or settings.backq_strategy
