@@ -142,15 +142,45 @@ Reglas:
     return out[:max_questions]
 
 def _extract_full_text(data: bytes) -> str:
-    """Extrae texto plano de TODO el PDF (unión de páginas)."""
+    """
+    Extrae TEXTO de TODO el PDF (concatenado por páginas).
+    Prioriza PyMuPDF con 'blocks' (mejor orden visual); fallback a PyPDF2.
+    """
+    # --- Opción 1: PyMuPDF (mejor orden por bloques) ---
+    try:
+        import fitz  # PyMuPDF
+        doc = fitz.open(stream=data, filetype="pdf")
+        parts = []
+        for page in doc:
+            # Intento preferente: bloques (bbox + orden visual)
+            blocks = page.get_text("blocks") or []
+            blk_texts = []
+            for b in blocks:
+                # b = (x0, y0, x1, y1, "texto", block_no, block_type, ...)
+                if isinstance(b, (list, tuple)) and len(b) >= 5 and isinstance(b[4], str):
+                    blk_texts.append(b[4])
+            if blk_texts:
+                parts.append("\n".join(blk_texts).replace("\r", ""))
+            else:
+                # Fallback por página si no hay bloques
+                parts.append((page.get_text("text") or "").replace("\r", ""))
+        doc.close()
+        return "\n".join(parts)
+    except Exception:
+        # Continúa al fallback
+        pass
+
+    # --- Opción 2: PyPDF2 (fallback compatible) ---
     r = PdfReader(BytesIO(data))
     buf = []
-    for p in range(len(r.pages)):
+    for i in range(len(r.pages)):
         try:
-            buf.append(r.pages[p].extract_text() or "")
+            t = r.pages[i].extract_text() or ""
+            buf.append(t.replace("\r", ""))
         except Exception:
             buf.append("")
     return "\n".join(buf)
+
 
 def _detect_back_questions_regex(sample_bytes: bytes) -> List[Dict[str, Any]]:
     """
@@ -215,19 +245,62 @@ def _resolve_base_prompt_doc_id(
 # ================== Helpers de PDF/Chunking ==================
 
 def _extract_sample_pdf_bytes(data: bytes, take_first: int, take_last: int) -> bytes:
+    """
+    Devuelve un PDF en bytes que contiene SOLO:
+      - las primeras `take_first` páginas y
+      - las últimas `take_last` páginas,
+    evitando solapamientos si (take_first + take_last) > total.
+
+    Prioriza PyMuPDF por rendimiento; cae a PyPDF2 si no está disponible.
+    """
+    # --- Opción 1: PyMuPDF (rápido, conserva estructura) ---
+    try:
+        import fitz  # PyMuPDF
+        src = fitz.open(stream=data, filetype="pdf")
+        total = src.page_count
+
+        first = max(0, min(int(take_first or 0), total))
+        last  = max(0, min(int(take_last or 0),  total))
+
+        first_end   = min(first, total)         # [0, first_end)
+        last_start  = max(0, total - last)      # [last_start, total)
+
+        # Evita duplicar páginas si N+M > total
+        if last_start < first_end:
+            last_start = first_end
+
+        out = fitz.open()
+        if first_end > 0:
+            out.insert_pdf(src, from_page=0, to_page=first_end - 1)
+        if last_start < total:
+            out.insert_pdf(src, from_page=last_start, to_page=total - 1)
+
+        result = out.tobytes()
+        out.close()
+        src.close()
+        return result
+    except Exception:
+        # Continúa al fallback
+        pass
+
+    # --- Opción 2: PyPDF2 (fallback compatible) ---
     r = PdfReader(BytesIO(data))
     n = len(r.pages)
     w = PdfWriter()
-    first_count = min(take_first, n)
+
+    first_count = min(max(0, int(take_first or 0)), n)
     for i in range(first_count):
         w.add_page(r.pages[i])
-    last_count = min(take_last, n - first_count)
+
+    last_count = min(max(0, int(take_last or 0)), max(0, n - first_count))
     for i in range(n - last_count, n):
-        if i >= first_count:
+        if i >= first_count:  # evita solaparse
             w.add_page(r.pages[i])
+
     out = BytesIO()
     w.write(out)
     return out.getvalue()
+
 
 def _split_pdf_to_text_chunks(data: bytes, pages_per_chunk: int) -> List[str]:
     r = PdfReader(BytesIO(data))
