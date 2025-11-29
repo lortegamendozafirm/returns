@@ -16,5 +16,9 @@ def process_pdf_back_questions_run(req: TaskRunBackQuestionsPayload):
         drive_file_id=req.drive_file_id,
         sampling_first_pages=req.sampling_first_pages or settings.backq_first_pages_default,
         sampling_last_pages=req.sampling_last_pages or settings.backq_last_pages_default,
+        sheet_id=req.sheet_id,
+        row=req.row,
+        col=req.col,
         additional_params=req.additional_params or {},
     )
+

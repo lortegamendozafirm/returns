@@ -556,11 +556,10 @@ def process_back_questions_job(
     drive_file_id: Optional[str],
     sampling_first_pages: int,
     sampling_last_pages: int,
-    additional_params: Dict[str, Any],
-    # 👇 NUEVO: tracking en Google Sheets
     sheet_id: Optional[str] = None,
-    row: Optional[int] = None,     # 1-based
-    col: Optional[int] = None,     # 1-based (link aquí; estatus en col+1)
+    row: Optional[int] = None,
+    col: Optional[int] = None,
+    additional_params: Dict[str, Any],
 ) -> Dict[str, Any]:
     logger.info("🏁 Back-Questions: inicio de job.")
 
